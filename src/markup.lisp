@@ -42,14 +42,7 @@
 
 (defmacro html (form)
   (let ((tagname (pop form))
-        (attr-plist (apply #'append
-                           (loop while form
-                                 with res
-                                 do (cond
-                                      ((keywordp (car form))
-                                       (push (list (pop form) (pop form)) res))
-                                      ((and (consp (car form)) (symbolp (caar form)) (string= "@" (symbol-name (caar form))))
-                                       (push (cdr (pop form)) res))
-                                      (t (return res)))
-                                 finally (return res)))))
+        (attr-plist (loop while (and form (keywordp (car form)))
+                          collect (pop form)
+                          collect (pop form))))
     `(tag ,tagname ,attr-plist ,@form)))
