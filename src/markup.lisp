@@ -23,21 +23,22 @@
   (and (consp form)
        (keywordp (car form))))
 
-(defmacro tag (name &optional attr-plist (body nil body-supplied-p))
+(defmacro tag (name attr-plist &rest body)
   (let ((res (gensym)))
-    (if body-supplied-p
-        `(format nil "<~(~A~)~@[ ~A~]>~@[~A~]</~(~A~)>"
+    (if (= 0 (length body))
+        `(format nil "<~(~A~) />" ,name)
+        `(format nil "<~(~A~)~@[ ~A~]>~{~@[~A~]~}</~(~A~)>"
                  ,name (attr ',attr-plist)
-                 ,(cond
-                    ((tagp body) `(html ,body))
-                    ((consp body) `(let ((,res ,body))
-                                     (if (listp ,res) (apply #'concatenate 'string ,res)
-                                         ,res)))
-                    (t `(let ((,res ,body))
-                          (and ,res
-                               (escape-string (format nil "~A" ,res))))))
-                 ,name)
-        `(format nil "<~(~A~) />" ,name))))
+                 (list ,@(loop for b in body
+                               collect (cond
+                                         ((tagp b) `(html ,b))
+                                         ((consp b) `(let ((,res ,b))
+                                                       (if (listp ,res) (apply #'concatenate 'string ,res)
+                                                           ,res)))
+                                         (t `(let ((,res ,b))
+                                               (and ,res
+                                                    (escape-string (format nil "~A" ,res))))))))
+                 ,name))))
 
 (defmacro html (form)
   (let ((tagname (pop form))

@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 13)
+(plan 14)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -17,13 +17,13 @@
   (is-expand (html (:p (@ :id "title") (:div "hoge")))
              (cl-markup::tag :p (:id "title") (:div "hoge")))
   (is-expand (cl-markup::tag :p (:id "title") (:div "hoge"))
-             (format nil "<~(~A~)~@[ ~A~]>~@[~A~]</~(~A~)>" :p (cl-markup::attr '(:id "title")) (html (:div "hoge")) :p))
+             (format nil "<~(~A~)~@[ ~A~]>~{~@[~A~]~}</~(~A~)>" :p (cl-markup::attr '(:id "title")) (list (html (:div "hoge"))) :p))
   )
 
 (deftest html
     (setf cl-test-more:*default-test-function* #'string=)
   (is (html (:p "hoge")) "<p>hoge</p>" "normal 'p' tag.")
-;  (is (html (:ul nil (:li "one") (:li "two"))) "<ul><li>one</li><li>two</li></ul>" "multiple items")
+  (is (html (:ul (:li "one") (:li "two"))) "<ul><li>one</li><li>two</li></ul>" "multiple items")
   (is (html (:br)) "<br />" "'br' tag")
   (is (html (:p nil)) "<p></p>" "empty tag")
   (is (html (:p (@ :id "title" :class "important") "Hello, World!")) "<p id=\"title\" class=\"important\">Hello, World!</p>" "with attributes.")
