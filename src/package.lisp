@@ -1,5 +1,5 @@
 (in-package :cl-user)
 
 (defpackage cl-markup
-  (:use :cl)
-  (:export :html))
+  (:use :cl :cl-ppcre)
+  (:export :html :escape-string))

@@ -1,6 +1,10 @@
 (in-package :cl-markup-test)
 
-(plan 9)
+(plan 10)
+
+(deftest escape
+    (is (escape-string "<script type=\"text/javascript\">alert();</script>")
+        "&lt;script type=&quot;text/javascript&quot;&gt;alert();&lt;/script&gt;"))
 
 (deftest html-expansion
     (setf cl-test-more:*default-test-function* #'equal)
@@ -19,8 +23,11 @@
   (is (html (:p "hoge")) "<p>hoge</p>" "normal 'p' tag.")
   (is (html (:br)) "<br />" "'br' tag")
   (is (html (:p nil)) "<p></p>" "empty tag")
-  (is (html (:p (:id "title") "Hello, World!")) "<p id=\"title\">Hello, World!</p>" "with attributes.")
+  (is (html (:p (:id "title" :class "important") "Hello, World!")) "<p id=\"title\" class=\"important\">Hello, World!</p>" "with attributes.")
   (is (html (:p (:div (:style "padding: 10px;") "fuga"))) "<p><div style=\"padding: 10px;\">fuga</div></p>" "nested tag.")
+  (is (html (:div (:name "<script type=\"text/javascript\">alert();</script>")
+                  "<hoge>"))
+      "<div name=\"&lt;script type=&quot;text/javascript&quot;&gt;alert();&lt;/script&gt;\">&lt;hoge&gt;</div>" "escape body and attribute values")
   )
 
 (run-test-all)
