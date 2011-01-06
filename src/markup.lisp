@@ -15,9 +15,9 @@
 (defmacro attr (attr-plist)
   (and (consp attr-plist)
        `(format nil
-                "~{~A~^ ~}"
+                "~{~(~A~)=\"~A\"~^ ~}"
                 (list ,@(loop for (key val) on attr-plist by #'cddr
-                        collect `(format nil "~(~A~)=\"~A\"" ,key (escape-string ,val)))))))
+                              append (list key `(escape-string ,val)))))))
 
 (defun tagp (form)
   (and (consp form)
