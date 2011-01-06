@@ -12,12 +12,12 @@
                            (t match)))
                      :simple-calls t))
 
-(defun attr (attr-plist)
+(defmacro attr (attr-plist)
   (and (consp attr-plist)
-       (format nil
-               "~{~A~^ ~}"
-               (loop for (key val) on attr-plist by #'cddr
-                     collect (format nil "~(~A~)=\"~A\"" key (escape-string val))))))
+       `(format nil
+                "~{~A~^ ~}"
+                (list ,@(loop for (key val) on attr-plist by #'cddr
+                        collect `(format nil "~(~A~)=\"~A\"" ,key (escape-string ,val)))))))
 
 (defun tagp (form)
   (and (consp form)
@@ -28,7 +28,7 @@
     (if (= 0 (length body))
         `(format nil "<~(~A~) />" ,name)
         `(format nil "<~(~A~)~@[ ~A~]>~{~@[~A~]~}</~(~A~)>"
-                 ,name (attr ',attr-plist)
+                 ,name (attr ,attr-plist)
                  (list ,@(loop for b in body
                                collect (cond
                                          ((tagp b) `(html ,b))
