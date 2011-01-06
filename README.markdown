@@ -10,7 +10,7 @@
 
     (html
      (:body
-      (:p (:id "title") "aiueo")))
+      (:p :id "title" "aiueo")))
     ;;=> "&lt;html&gt;&lt;body&gt;&lt;p id=\"title\"&gt;aiueo&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"
 
 ## License

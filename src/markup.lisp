@@ -23,21 +23,32 @@
   (and (consp form)
        (keywordp (car form))))
 
-(defun %tag (name attr-plist &optional (body nil body-supplied-p))
-  (if body-supplied-p
-      (format nil "<~(~A~)~@[ ~A~]>~@[~A~]</~(~A~)>"
-              name (attr attr-plist) body name)
-      (format nil "<~(~A~) />" name)))
-
 (defmacro tag (name &optional attr-plist (body nil body-supplied-p))
-  (if body-supplied-p
-      `(%tag ,name ',attr-plist
-             ,(if (tagp body)
-                  `(html ,body)
-                  `(escape-string ,body)))
-      `(%tag ,name ',attr-plist)))
+  (let ((res (gensym)))
+    (if body-supplied-p
+        `(format nil "<~(~A~)~@[ ~A~]>~@[~A~]</~(~A~)>"
+                 ,name (attr ',attr-plist)
+                 ,(cond
+                    ((tagp body) `(html ,body))
+                    ((consp body) `(let ((,res ,body))
+                                     (if (listp ,res) (apply #'concatenate 'string ,res)
+                                         ,res)))
+                    (t `(let ((,res ,body))
+                          (and ,res
+                               (escape-string (format nil "~A" ,res))))))
+                 ,name)
+        `(format nil "<~(~A~) />" ,name))))
 
 (defmacro html (form)
-  (if (= 2 (length form))
-      `(tag ,(car form) nil ,@(cdr form))
-      `(tag ,@form)))
+  (let ((tagname (pop form))
+        (attr-plist (apply #'append
+                           (loop while form
+                                 with res
+                                 do (cond
+                                      ((keywordp (car form))
+                                       (push (list (pop form) (pop form)) res))
+                                      ((and (consp (car form)) (symbolp (caar form)) (string= "@" (symbol-name (caar form))))
+                                       (push (cdr (pop form)) res))
+                                      (t (return res)))
+                                 finally (return res)))))
+    `(tag ,tagname ,attr-plist ,@form)))
