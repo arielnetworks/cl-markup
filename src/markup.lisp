@@ -12,12 +12,27 @@
                            (t match)))
                      :simple-calls t))
 
+(defmacro %write-strings (&rest strings)
+  (let ((s (gensym)))
+    `(if *output-stream*
+         (progn
+           ,@(loop for str in strings
+                   collect `(write-string ,str *output-stream*)))
+         (with-output-to-string (,s)
+           ,@(loop for str in strings
+                   collect `(write-string ,str ,s))))))
+
 (defmacro attr (attr-plist)
   (and (consp attr-plist)
-       `(format nil
-                "~{~(~A~)=\"~A\"~^ ~}"
-                (list ,@(loop for (key val) on attr-plist by #'cddr
-                              append (list key `(escape-string ,val)))))))
+       `(%write-strings*
+         ,@(butlast
+            (loop for (key val) on attr-plist by #'cddr
+                  append `(,(concatenate 'string
+                                          (string-downcase key)
+                                         "=\"")
+                           (escape-string ,val)
+                           "\""
+                           " "))))))
 
 (defun tagp (form)
   (and (consp form)
