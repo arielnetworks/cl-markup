@@ -13,4 +13,5 @@
   :components ((:module "src"
                 :serial t
                 :components ((:file "package")
+                             (:file "special")
                              (:file "markup")))))
