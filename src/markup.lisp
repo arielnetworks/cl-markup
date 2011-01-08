@@ -24,7 +24,7 @@
 
 (defmacro attr (attr-plist)
   (and (consp attr-plist)
-       `(%write-strings*
+       `(%write-strings
          ,@(butlast
             (loop for (key val) on attr-plist by #'cddr
                   append `(,(concatenate 'string

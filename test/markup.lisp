@@ -9,7 +9,7 @@
 (deftest html-expansion
     (setf cl-test-more:*default-test-function* #'equal)
   (is-expand (cl-markup::attr (:id "title"))
-             (cl-markup::write-strings* "id=\"" (escape-string "title") "\""))
+             (cl-markup::%write-strings "id=\"" (escape-string "title") "\""))
   (is-expand (html (:p "hoge"))
              (cl-markup::tag :p nil "hoge"))
   (is-expand (html (:p :id "title" "hoge"))
