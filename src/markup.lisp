@@ -1,5 +1,22 @@
 (in-package :cl-markup)
 
+(defun map-group-if (pred list fn)
+  (loop
+    while list
+    for cur = (pop list)
+    for cur-res = (funcall pred cur)
+    append
+    (let ((res (nreverse
+                (loop with acc = (list cur)
+                      while list
+                      for x = (pop list)
+                      if (eq cur-res (funcall pred x))
+                        do (push x acc)
+                      else do (progn (push x list)
+                                     (return acc))
+                      finally (return acc)))))
+      (if cur-res (list (apply fn res)) res))))
+
 (defun escape-string (string)
   (regex-replace-all (create-scanner "[&<>'\"]") string
                      #'(lambda (match)
@@ -14,13 +31,16 @@
 
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym)))
-    `(if *output-stream*
-         (progn
-           ,@(loop for str in strings
-                   collect `(write-string ,str *output-stream*)))
-         (with-output-to-string (,s)
-           ,@(loop for str in strings
-                   collect `(write-string ,str ,s))))))
+    (flet ((conv (strs) (map-group-if #'stringp strs
+                                      (lambda (&rest args)
+                                        (apply #'concatenate 'string args)))))
+      `(if *output-stream*
+           (progn
+             ,@(loop for str in (conv strings)
+                     collect `(write-string ,str *output-stream*)))
+           (with-output-to-string (,s)
+             ,@(loop for str in (conv strings)
+                     collect `(write-string ,str ,s)))))))
 
 (defmacro attr (attr-plist)
   (and (consp attr-plist)
