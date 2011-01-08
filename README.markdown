@@ -2,16 +2,51 @@
 
 ## About
 
-* document type (markup, xml, html, xhtml)
-* output stream
-* enable-markup-syntax
+* Fast (only if you compile it)
+* Support multiple document types (markup, xml, html, xhtml)
+* Output to stream directly
 
 ## Usage
 
     (html
      (:body
       (:p :id "title" "aiueo")))
-    ;;=> "&lt;html&gt;&lt;body&gt;&lt;p id=\"title\"&gt;aiueo&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"
+    ;=> <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    ;   <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
+    ;   <html><body><p id="title">aiueo</p></body></html>
+
+## Markup language
+
+<code>markup</code> parse forms and write the result simply.
+
+    (markup (:p "あいうえお"))
+    ;=> "<p>あいうえお</p>"
+
+Other macros <code>html<code>, <code>xhtml</code> and <code>xml</code>, output DOCTYPE before <code>markup</code>.
+
+    (html (:p "あいうえお"))
+    ;=> "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><p>あいうえお</p></html>"
+
+## Escape
+
+    (markup (:p "Tiffany & Co."))
+    ;=> "<p>Tiffany &amp; Co.</p>"
+
+    (markup (:p (raw "Tiffany & Co.")))
+    ;=> "<p>Tiffany & Co.</p>"
+
+## Output to stream directly
+
+Markup macros output html tags into \*output-stream\*. The default is <code>NIL</code> and returns as a string. If it is <code>T</code>, output it to \*standard-output*.
+
+    (let (*output-stream*)
+      (markup (:p "hoge"))
+    ;=> "<p>hoge</p>"
+    
+    (let ((*output-stream* t))
+      (markup (:p "hoge")))
+    ;;=> <p>hoge</p>
+    ;=> T
 
 ## License
 
