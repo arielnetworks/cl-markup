@@ -107,14 +107,29 @@
                     ,@(loop for tag in tags
                             collect `(tag ,tag)))))
 
+(defun doctype ()
+  (%write-strings
+   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+   (case *markup-language*
+     (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+     (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
+     (t "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"))))
+
+(defmacro with-doctype (lang &body body)
+  `(let ((*markup-language* ,lang))
+     (if *output-stream*
+         (progn (doctype) ,@body)
+         (concatenate 'string
+                      (doctype) ,@body))))
+
 (defmacro html (&rest tags)
-  `(let ((*markup-language* :html))
+  `(with-doctype :html
      (markup (:html ,@tags))))
 
 (defmacro xhtml (&rest tags)
-  `(let ((*markup-language* :xhtml))
+  `(with-doctype :xhtml
      (markup (:html ,@tags))))
 
 (defmacro xml (&rest tags)
-  `(let ((*markup-language* :xml))
+  `(with-doctype :xml
      (markup ,@tags)))
