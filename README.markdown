@@ -48,6 +48,17 @@ Markup macros output html tags into \*output-stream\*. The default is <code>NIL<
     ;;=> <p>hoge</p>
     ;=> T
 
+## Markup syntax
+
+You can embeded Lisp code in a tag body.
+
+    (markup (:ul (loop for item in '(1 2 3) collect (markup (:li item)))))
+
+But, <code>markup</code> is too long to embed. cl-markup provides an usefull syntax to write more shortly.
+
+    (enable-markup-syntax)
+    #M(:ul (loop for item in '(1 2 3) collect #M(:li item))))
+
 ## License
 
 Copyright (c) 2011 Eitarow Fukamachi.  

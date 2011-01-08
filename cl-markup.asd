@@ -14,4 +14,5 @@
                 :serial t
                 :components ((:file "package")
                              (:file "special")
-                             (:file "markup")))))
+                             (:file "markup")
+                             (:file "readmacro")))))
