@@ -52,6 +52,8 @@
                             ((consp b) `(let ((,res ,b))
                                           (if (listp ,res) (apply #'concatenate 'string ,res)
                                               ,res)))
+                            ((null b) "")
+                            ((stringp b) `(escape-string ,b))
                             (t `(let ((,res ,b))
                                   (if ,res
                                       (escape-string (format nil "~A" ,res))

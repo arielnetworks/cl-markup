@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 13)
+(plan 15)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -16,6 +16,12 @@
              (cl-markup::tag :p (:id "title") "hoge"))
   (is-expand (cl-markup::tag :p (:id "title") (:div "hoge"))
              (cl-markup::%write-strings "<p " (cl-markup::attr (:id "title")) ">" (html (:div "hoge")) "</p>"))
+  (is-expand (cl-markup::tag :p nil nil)
+             (cl-markup::%write-strings "<p" "" ">" "" "</p>")
+             "expands nil to empty string")
+  (is-expand (cl-markup::tag :p nil "hoge")
+             (cl-markup::%write-strings "<p" "" ">" (escape-string "hoge") "</p>")
+             "expands strings as a string")
   )
 
 (deftest html
