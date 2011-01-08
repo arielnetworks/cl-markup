@@ -49,7 +49,7 @@
              ,@(loop for str in (conv strings)
                      collect `(write-string ,str ,s)))))))
 
-(defmacro attr (attr-plist)
+(defmacro render-attr (attr-plist)
   (and (consp attr-plist)
        `(%write-strings
          ,@(butlast
@@ -65,17 +65,17 @@
   (and (consp form)
        (keywordp (car form))))
 
-(defmacro tag (name attr-plist &rest body)
+(defmacro render-tag (name attr-plist &rest body)
   (let ((res (gensym)))
     (if (= 0 (length body))
         `(%write-strings ,(format nil "<~(~A~) />" name))
         `(%write-strings
           ,(format nil "<~(~A~)~@[ ~]" name attr-plist)
-          ,(if attr-plist `(attr ,attr-plist) "")
+          ,(if attr-plist `(render-attr ,attr-plist) "")
           ">"
           ,@(loop for b in body
                   collect (cond
-                            ((tagp b) `(html ,b))
+                            ((tagp b) `(markup ,b))
                             ((consp b) `(let ((,res ,b))
                                           (if (listp ,res) (apply #'concatenate 'string ,res)
                                               ,res)))
@@ -87,19 +87,19 @@
                                       "")))))
           ,(format nil "</~(~A~)>" name)))))
 
-(defmacro html-tag (tag)
+(defmacro tag (tag)
   (let ((tagname (pop tag))
         (attr-plist (loop while (and tag (keywordp (car tag)))
                           collect (pop tag)
                           collect (pop tag))))
-    `(tag ,tagname ,attr-plist ,@tag)))
+    `(render-tag ,tagname ,attr-plist ,@tag)))
 
-(defmacro html (&rest tags)
+(defmacro markup (&rest tags)
   `(if *output-stream*
        (progn
          ,@(loop for tag in tags
-                 collect `(html-tag ,tag))
+                 collect `(tag ,tag))
          *output-stream*)
        (concatenate 'string
                     ,@(loop for tag in tags
-                            collect `(html-tag ,tag)))))
+                            collect `(tag ,tag)))))
