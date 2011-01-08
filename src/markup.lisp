@@ -18,16 +18,23 @@
       (if cur-res (list (apply fn res)) res))))
 
 (defun escape-string (string)
-  (regex-replace-all (create-scanner "[&<>'\"]") string
-                     #'(lambda (match)
-                         (case (aref match 0)
-                           (#\& "&amp;")
-                           (#\< "&lt;")
-                           (#\> "&gt;")
-                           (#\' "&#039;")
-                           (#\" "&quot;")
-                           (t match)))
-                     :simple-calls t))
+  (if *auto-escape*
+      (regex-replace-all (create-scanner "[&<>'\"]") string
+                         #'(lambda (match)
+                             (case (aref match 0)
+                               (#\& "&amp;")
+                               (#\< "&lt;")
+                               (#\> "&gt;")
+                               (#\' "&#039;")
+                               (#\" "&quot;")
+                               (t match)))
+                         :simple-calls t)))
+
+(defmacro raw (&body body)
+  `(let (*auto-escape*) ,@body))
+
+(defmacro esc (&body body)
+  `(let ((*auto-escape* t)) ,@body))
 
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym)))

@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 15)
+(plan 17)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -38,5 +38,15 @@
   (is (html (:ul (loop for v in '("a" "b" "c") collect (html (:li v)))))
       "<ul><li>a</li><li>b</li><li>c</li></ul>")
   )
+
+(deftest raw-and-esc
+    (setf cl-markup::*auto-escape* t)
+  (is (html (:p "<hoge>"))
+      "<p>&lt;hoge&gt;</p>"
+      "normal case")
+  (is (html (:p "<hoge>" (:div (raw "Tiffany & Co."))))
+      "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
+      "raw")
+)
 
 (run-test-all)
