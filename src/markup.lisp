@@ -68,7 +68,10 @@
 (defmacro render-tag (name attr-plist &rest body)
   (let ((res (gensym)))
     (if (= 0 (length body))
-        `(%write-strings ,(format nil "<~(~A~) />" name))
+        `(%write-strings ,(format nil "<~(~A~)" name)
+                         (if (eq *markup-language* :html)
+                             ">"
+                             " />"))
         `(%write-strings
           ,(format nil "<~(~A~)~@[ ~]" name attr-plist)
           ,(if attr-plist `(render-attr ,attr-plist) "")
@@ -103,3 +106,15 @@
        (concatenate 'string
                     ,@(loop for tag in tags
                             collect `(tag ,tag)))))
+
+(defmacro html (&rest tags)
+  `(let ((*markup-language* :html))
+     (markup (:html ,@tags))))
+
+(defmacro xhtml (&rest tags)
+  `(let ((*markup-language* :xhtml))
+     (markup (:html ,@tags))))
+
+(defmacro xml (&rest tags)
+  `(let ((*markup-language* :xml))
+     (markup ,@tags)))

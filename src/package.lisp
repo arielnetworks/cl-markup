@@ -2,6 +2,8 @@
 
 (defpackage cl-markup
   (:use :cl :cl-ppcre)
-  (:export :markup :tag :escape-string :raw :esc
+  (:export :markup :html :xhtml :xml :tag
+           :escape-string :raw :esc
            :*auto-escape*
-           :*output-stream*))
+           :*output-stream*
+           :*markup-language*))

@@ -5,3 +5,6 @@
 
 (defvar *auto-escape* t
   "Flag whether escape embeded strings automatically or not.")
+
+(defvar *markup-language* :xhtml
+  "Valid markup languages are :html, :xhtml and :xml")
