@@ -15,7 +15,7 @@
   (is-expand (html (:p :id "title" "hoge"))
              (cl-markup::tag :p (:id "title") "hoge"))
   (is-expand (cl-markup::tag :p (:id "title") (:div "hoge"))
-             (format nil "<~(~A~)~@[ ~A~]>~{~@[~A~]~}</~(~A~)>" :p (cl-markup::attr (:id "title")) (list (html (:div "hoge"))) :p))
+             (cl-markup::%write-strings "<p " (cl-markup::attr (:id "title")) ">" (html (:div "hoge")) "</p>"))
   )
 
 (deftest html

@@ -41,19 +41,22 @@
 (defmacro tag (name attr-plist &rest body)
   (let ((res (gensym)))
     (if (= 0 (length body))
-        `(format nil "<~(~A~) />" ,name)
-        `(format nil "<~(~A~)~@[ ~A~]>~{~@[~A~]~}</~(~A~)>"
-                 ,name (attr ,attr-plist)
-                 (list ,@(loop for b in body
-                               collect (cond
-                                         ((tagp b) `(html ,b))
-                                         ((consp b) `(let ((,res ,b))
-                                                       (if (listp ,res) (apply #'concatenate 'string ,res)
-                                                           ,res)))
-                                         (t `(let ((,res ,b))
-                                               (and ,res
-                                                    (escape-string (format nil "~A" ,res))))))))
-                 ,name))))
+        `(%write-strings ,(format nil "<~(~A~) />" name))
+        `(%write-strings
+          ,(format nil "<~(~A~)~@[ ~]" name attr-plist)
+          ,(if attr-plist `(attr ,attr-plist) "")
+          ">"
+          ,@(loop for b in body
+                  collect (cond
+                            ((tagp b) `(html ,b))
+                            ((consp b) `(let ((,res ,b))
+                                          (if (listp ,res) (apply #'concatenate 'string ,res)
+                                              ,res)))
+                            (t `(let ((,res ,b))
+                                  (if ,res
+                                      (escape-string (format nil "~A" ,res))
+                                      "")))))
+          ,(format nil "</~(~A~)>" name)))))
 
 (defmacro html (form)
   (let ((tagname (pop form))
