@@ -87,9 +87,19 @@
                                       "")))))
           ,(format nil "</~(~A~)>" name)))))
 
-(defmacro html (form)
-  (let ((tagname (pop form))
-        (attr-plist (loop while (and form (keywordp (car form)))
-                          collect (pop form)
-                          collect (pop form))))
-    `(tag ,tagname ,attr-plist ,@form)))
+(defmacro html-tag (tag)
+  (let ((tagname (pop tag))
+        (attr-plist (loop while (and tag (keywordp (car tag)))
+                          collect (pop tag)
+                          collect (pop tag))))
+    `(tag ,tagname ,attr-plist ,@tag)))
+
+(defmacro html (&rest tags)
+  `(if *output-stream*
+       (progn
+         ,@(loop for tag in tags
+                 collect `(html-tag ,tag))
+         *output-stream*)
+       (concatenate 'string
+                    ,@(loop for tag in tags
+                            collect `(html-tag ,tag)))))
