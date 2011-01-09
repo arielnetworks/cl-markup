@@ -154,6 +154,9 @@
      (loop for tag in ',tags
            append (tag->string tag))))
 
+(defun markup* (&rest tags)
+  (eval `(markup ,@tags)))
+
 (defmacro html (&rest tags)
   `(with-doctype :html
      (tag->string (cons :html ',tags))))
