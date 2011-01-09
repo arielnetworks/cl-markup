@@ -44,9 +44,18 @@
   (is (markup (:p "<hoge>"))
       "<p>&lt;hoge&gt;</p>"
       "normal case")
+  (is (markup (:p (esc "<hoge>")))
+      "<p>&lt;hoge&gt;</p>"
+      "esc")
+  (is (markup (:p (esc (concatenate 'string "<" "hage" ">"))))
+      "<p>&lt;hage&gt;</p>"
+      "esc with an expression")
   (is (markup (:p "<hoge>" (:div (raw "Tiffany & Co."))))
       "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
       "raw")
+  (is (markup (:p "<hoge>" (:div (raw (concatenate 'string "Tiffany" " & " "Co.")))))
+      "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
+      "raw with an expression")
 )
 
 (run-test-all)

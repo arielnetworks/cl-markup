@@ -31,11 +31,13 @@
                                (t match)))
                          :simple-calls t)))
 
-(defmacro raw (&body body)
-  `(let (*auto-escape*) ,@body))
+(defmacro raw (&rest forms)
+  `(let (*auto-escape*) ,@forms))
 
-(defmacro esc (&body body)
-  `(let ((*auto-escape* t)) ,@body))
+(defmacro esc (&rest forms)
+  `(let ((*auto-escape* t))
+     ,@(loop for form in forms
+             collect `(escape-string ,form))))
 
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym)))
