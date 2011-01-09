@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 21)
+(plan 22)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -25,6 +25,9 @@
   (is (markup (:br)) "<br />" "'br' tag")
   (is (markup (:br :style "clear: both;")) "<br style=\"clear: both;\" />" "'br' tag with an attribute")
   (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>" "'br' tag")
+  (is (html (:ul (loop for item in '(1 2 3) collect (markup (:li (:br) item)))))
+      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li><br>1</li><li><br>2</li><li><br>3</li></ul></html>"
+      "inner markup sees *markup-language*")
   (is (markup (:p nil)) "<p></p>" "empty tag")
   (is (markup (:p :id "title" :class "important" "Hello, World!")) "<p id=\"title\" class=\"important\">Hello, World!</p>" "with attributes.")
   (is (markup (:p (:div :style "padding: 10px;" "fuga"))) "<p><div style=\"padding: 10px;\">fuga</div></p>" "nested tag.")

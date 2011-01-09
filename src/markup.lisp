@@ -126,18 +126,23 @@
      (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
      (t ""))))
 
-;(defmacro with-doctype (lang &body body)
-;  `(let ((*markup-language* ,lang))
-;     (%write-strings (doctype) ,@body)))
-(defmacro with-doctype (lang body)
+(defmacro with-markup-lang (lang &body body)
   `(%write-strings
     ,(eval-when (:compile-toplevel :load-toplevel :execute)
-       (setq *markup-language* lang)
-       (doctype))
-    ,@(eval body)))
+       (if lang (setq *markup-language* lang))
+       "")
+    ,@(loop for b in body
+            append (eval b))))
+
+(defmacro with-doctype (lang &body body)
+  `(prog1
+     (with-markup-lang ,lang
+       (list (doctype))
+       ,@body)
+     (setq *markup-language* :xhtml)))
 
 (defmacro markup (&rest tags)
-  `(with-doctype nil
+  `(with-markup-lang nil
      (loop for tag in ',tags
            append (tag->string tag))))
 
