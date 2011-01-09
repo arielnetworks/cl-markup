@@ -95,44 +95,46 @@
                                  ((stringp elem) `(escape-string ,elem))
                                  (t `(escape-string (format nil "~A" ,elem)))))
                 (list (format nil "</~(~A~)>" name)))
-         (list " />")))))
+         (if (eq *markup-language* :html)
+             (list ">")
+             (list " />"))))))
 
 (defmacro render-tag (tag)
   `(%write-strings
     ,@(tag->string tag)))
-
-(defmacro markup (&rest tags)
-  `(if *output-stream*
-       (progn
-         ,@(loop for tag in tags
-                 collect `(render-tag ,tag))
-         *output-stream*)
-       (concatenate 'string
-                    ,@(loop for tag in tags
-                            collect `(render-tag ,tag)))))
 
 (defun doctype ()
   (%write-strings
    (case *markup-language*
      (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
      (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
-     (t "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"))))
+     (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
+     (t ""))))
 
-(defmacro with-doctype (lang &body body)
-  `(let ((*markup-language* ,lang))
-     (if *output-stream*
-         (progn (doctype) ,@body)
-         (concatenate 'string
-                      (doctype) ,@body))))
+;(defmacro with-doctype (lang &body body)
+;  `(let ((*markup-language* ,lang))
+;     (%write-strings (doctype) ,@body)))
+(defmacro with-doctype (lang body)
+  `(%write-strings
+    ,(eval-when (:compile-toplevel :load-toplevel :execute)
+       (setq *markup-language* lang)
+       (doctype))
+    ,@(eval body)))
+
+(defmacro markup (&rest tags)
+  `(with-doctype nil
+     (loop for tag in ',tags
+           append (tag->string tag))))
 
 (defmacro html (&rest tags)
   `(with-doctype :html
-     (markup (:html ,@tags))))
+     (tag->string (cons :html ',tags))))
 
 (defmacro xhtml (&rest tags)
   `(with-doctype :xhtml
-     (markup (:html ,@tags))))
+     (tag->string (cons :html ',tags))))
 
 (defmacro xml (&rest tags)
   `(with-doctype :xml
-     (markup ,@tags)))
+     (loop for tag in ',tags
+           append (tag->string tag))))
