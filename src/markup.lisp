@@ -32,6 +32,11 @@
                          :simple-calls t)
       string))
 
+(defun ensure-string (val)
+  (if (stringp val)
+      val
+      (format nil "~A" val)))
+
 (defun should-escape-p (val)
   (not (and (stringp val)
             (string= val (escape-string val)))))
@@ -83,7 +88,7 @@
               append `(,(concatenate 'string
                                      (string-downcase key)
                                      "=\"")
-                       ,(%escape-string val)
+                       ,(%escape-string `(ensure-string ,val))
                        "\""
                        " ")))))
 
@@ -107,7 +112,7 @@
                                                         ,res))))
                                  ((null elem) "")
                                  ((stringp elem) (%escape-string elem))
-                                 ((symbolp elem) `(escape-string (format nil "~A" ,elem)))
+                                 ((symbolp elem) `(escape-string (ensure-string ,elem)))
                                  (t (%escape-string (format nil "~A" elem)))))
                 (list (format nil "</~(~A~)>" name)))
          (if (eq *markup-language* :html)
