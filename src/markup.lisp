@@ -1,21 +1,22 @@
 (in-package :cl-markup)
 
-(defun map-group-if (pred list fn)
-  (loop
-    while list
-    for cur = (pop list)
-    for cur-res = (funcall pred cur)
-    append
-    (let ((res (nreverse
-                (loop with acc = (list cur)
-                      while list
-                      for x = (pop list)
-                      if (eq cur-res (funcall pred x))
-                        do (push x acc)
-                      else do (progn (push x list)
-                                     (return acc))
-                      finally (return acc)))))
-      (if cur-res (list (apply fn res)) res))))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun map-group-if (pred list fn)
+    (loop
+      while list
+      for cur = (pop list)
+      for cur-res = (funcall pred cur)
+      append
+      (let ((res (nreverse
+                  (loop with acc = (list cur)
+                        while list
+                        for x = (pop list)
+                        if (eq cur-res (funcall pred x))
+                          do (push x acc)
+                        else do (progn (push x list)
+                                       (return acc))
+                        finally (return acc)))))
+        (if cur-res (list (apply fn res)) res)))))
 
 (defun escape-string (string)
   (if *auto-escape*
