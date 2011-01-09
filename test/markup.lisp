@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 17)
+(plan 16)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -8,19 +8,13 @@
 
 (deftest html-expansion
     (setf cl-test-more:*default-test-function* #'equal)
-  (is-expand (cl-markup::render-attr (:id "title"))
-             (cl-markup::%write-strings "id=\"" (escape-string "title") "\""))
-  (is-expand (tag (:p "hoge"))
-             (cl-markup::render-tag :p nil "hoge"))
-  (is-expand (tag (:p :id "title" "hoge"))
-             (cl-markup::render-tag :p (:id "title") "hoge"))
-  (is-expand (cl-markup::render-tag :p (:id "title") (:div "hoge"))
-             (cl-markup::%write-strings "<p " (cl-markup::render-attr (:id "title")) ">" (markup (:div "hoge")) "</p>"))
-  (is-expand (cl-markup::render-tag :p nil nil)
-             (cl-markup::%write-strings "<p" "" ">" "" "</p>")
+  (is-expand (cl-markup::render-tag (:p :id "title" (:div "hoge")))
+             (cl-markup::%write-strings "<p" " " "id=\"" (escape-string "title") "\"" ">" "<div" ">" (escape-string "hoge") "</div>" "</p>"))
+  (is-expand (cl-markup::render-tag (:p nil))
+             (cl-markup::%write-strings "<p" ">" "" "</p>")
              "expands nil to empty string")
-  (is-expand (cl-markup::render-tag :p nil "hoge")
-             (cl-markup::%write-strings "<p" "" ">" (escape-string "hoge") "</p>")
+  (is-expand (cl-markup::render-tag (:p nil "hoge"))
+             (cl-markup::%write-strings "<p" ">" "" (escape-string "hoge") "</p>")
              "expands strings as a string")
   )
 
@@ -29,6 +23,7 @@
   (is (markup (:p "hoge")) "<p>hoge</p>" "normal 'p' tag.")
   (is (markup (:ul (:li "one") (:li "two"))) "<ul><li>one</li><li>two</li></ul>" "multiple items")
   (is (markup (:br)) "<br />" "'br' tag")
+  (is (markup (:br :style "clear: both;")) "<br style=\"clear: both;\" />" "'br' tag with an attribute")
   (is (markup (:p nil)) "<p></p>" "empty tag")
   (is (markup (:p :id "title" :class "important" "Hello, World!")) "<p id=\"title\" class=\"important\">Hello, World!</p>" "with attributes.")
   (is (markup (:p (:div :style "padding: 10px;" "fuga"))) "<p><div style=\"padding: 10px;\">fuga</div></p>" "nested tag.")
@@ -37,6 +32,8 @@
       "<div name=\"&lt;script type=&quot;text/javascript&quot;&gt;alert();&lt;/script&gt;\">&lt;hoge&gt;</div>" "escape body and attribute values")
   (is (markup (:ul (loop for v in '("a" "b" "c") collect (markup (:li v)))))
       "<ul><li>a</li><li>b</li><li>c</li></ul>")
+  (is (html (:body (:table (loop for x from 0 to 2 collect (markup (:tr (:td x)))))))
+      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><body><table><tr><td>0</td></tr><tr><td>1</td></tr><tr><td>2</td></tr></table></body></html>")
   )
 
 (deftest raw-and-esc

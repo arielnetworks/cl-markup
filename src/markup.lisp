@@ -50,63 +50,66 @@
              ,@(loop for str in (conv strings)
                      collect `(write-string ,str ,s)))))))
 
-(defmacro render-attr (attr-plist)
-  (and (consp attr-plist)
-       `(%write-strings
-         ,@(butlast
-            (loop for (key val) on attr-plist by #'cddr
-                  append `(,(concatenate 'string
-                                          (string-downcase key)
-                                         "=\"")
-                           (escape-string ,val)
-                           "\""
-                           " "))))))
-
 (defun tagp (form)
   (and (consp form)
        (keywordp (car form))))
 
-(defmacro render-tag (name attr-plist &rest body)
-  (let ((res (gensym)))
-    (if (= 0 (length body))
-        `(%write-strings ,(format nil "<~(~A~)" name)
-                         (if (eq *markup-language* :html)
-                             ">"
-                             " />"))
-        `(%write-strings
-          ,(format nil "<~(~A~)~@[ ~]" name attr-plist)
-          ,(if attr-plist `(render-attr ,attr-plist) "")
-          ">"
-          ,@(loop for b in body
-                  collect (cond
-                            ((tagp b) `(markup ,b))
-                            ((consp b) `(let ((,res ,b))
-                                          (if (listp ,res) (apply #'concatenate 'string ,res)
-                                              ,res)))
-                            ((null b) "")
-                            ((stringp b) `(escape-string ,b))
-                            (t `(let ((,res ,b))
-                                  (if ,res
-                                      (escape-string (format nil "~A" ,res))
-                                      "")))))
-          ,(format nil "</~(~A~)>" name)))))
+(defun parse-tag (tag)
+  (values
+   (pop tag)
+   (loop while (and tag (keywordp (car tag)))
+         collect (pop tag)
+         collect (pop tag))
+   tag))
 
-(defmacro tag (tag)
-  (let ((tagname (pop tag))
-        (attr-plist (loop while (and tag (keywordp (car tag)))
-                          collect (pop tag)
-                          collect (pop tag))))
-    `(render-tag ,tagname ,attr-plist ,@tag)))
+(defun attributes->string (attr-plist)
+  (and (consp attr-plist)
+       (butlast
+        (loop for (key val) on attr-plist by #'cddr
+              append `(,(concatenate 'string
+                                     (string-downcase key)
+                                     "=\"")
+                       (escape-string ,val)
+                       "\""
+                       " ")))))
+
+(defun tag->string (tag)
+  (multiple-value-bind (name attr-plist body)
+      (parse-tag tag)
+    (nconc
+     (list (format nil "<~(~A~)" name))
+     (let ((attr-str (attributes->string attr-plist)))
+       (if attr-str (cons " " attr-str)))
+     (if body
+         (nconc (list ">")
+                (loop for elem in body
+                      if (tagp elem)
+                       append (tag->string elem)
+                     else
+                       collect (cond
+                                 ((consp elem) (let ((res (gensym)))
+                                                 `(let ((,res ,elem))
+                                                    (if (listp ,res) (format nil "~{~A~}" ,res)
+                                                        ,res))))
+                                 ((null elem) "")
+                                 ((stringp elem) `(escape-string ,elem))
+                                 (t `(escape-string (format nil "~A" ,elem)))))
+                (list (format nil "</~(~A~)>" name)))
+         (list " />")))))
+
+(defmacro render-tag (tag)
+  `(%write-strings
+    ,@(tag->string tag)))
 
 (defmacro markup (&rest tags)
   `(if *output-stream*
        (progn
          ,@(loop for tag in tags
-                 collect `(tag ,tag))
+                 collect `(render-tag ,tag))
          *output-stream*)
        (concatenate 'string
                     ,@(loop for tag in tags
-                            collect `(tag ,tag)))))
+                            collect `(render-tag ,tag)))))
 
 (defun doctype ()
   (%write-strings
