@@ -29,7 +29,8 @@
                                (#\' "&#039;")
                                (#\" "&quot;")
                                (t match)))
-                         :simple-calls t)))
+                         :simple-calls t)
+      string))
 
 (defmacro raw (&rest forms)
   `(let (*auto-escape*) ,@forms))

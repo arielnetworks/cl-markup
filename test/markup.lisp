@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 20)
+(plan 21)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -56,6 +56,9 @@
   (is (markup (:p "<hoge>" (:div (raw (concatenate 'string "Tiffany" " & " "Co.")))))
       "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
       "raw with an expression")
+  (is (let (*auto-escape*) (markup (:p "<hoge>")))
+      "<p><hoge></p>"
+      "*auto-escape* is nil")
 )
 
 (run-test-all)
