@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage cl-markup
-  (:use :cl :cl-ppcre)
+  (:use :cl)
   (:export :markup :html :xhtml :xml
            :markup*
            :doctype
