@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 16)
+(plan 20)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
