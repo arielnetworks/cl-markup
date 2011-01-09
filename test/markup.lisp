@@ -8,13 +8,13 @@
 
 (deftest html-expansion
     (setf cl-test-more:*default-test-function* #'equal)
-  (is-expand (cl-markup::render-tag (:p :id "title" (:div "hoge")))
-             (cl-markup::%write-strings "<p" " " "id=\"" (escape-string "title") "\"" ">" "<div" ">" (escape-string "hoge") "</div>" "</p>"))
+  (is-expand (cl-markup::render-tag (:p :id "title" (:div "<hoge>")))
+             (cl-markup::%write-strings "<p" " " "id=\"" "title" "\"" ">" "<div" ">" (escape-string "<hoge>") "</div>" "</p>"))
   (is-expand (cl-markup::render-tag (:p nil))
              (cl-markup::%write-strings "<p" ">" "" "</p>")
              "expands nil to empty string")
   (is-expand (cl-markup::render-tag (:p nil "hoge"))
-             (cl-markup::%write-strings "<p" ">" "" (escape-string "hoge") "</p>")
+             (cl-markup::%write-strings "<p" ">" "" "hoge" "</p>")
              "expands strings as a string")
   )
 

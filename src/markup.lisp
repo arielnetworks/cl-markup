@@ -32,13 +32,24 @@
                          :simple-calls t)
       string))
 
+(defun should-escape-p (val)
+  (not (and (stringp val)
+            (string= val (escape-string val)))))
+
+(defmacro %escape-string (val)
+  (let ((val2 (gensym)))
+    `(let ((,val2 ,val))
+       (if (should-escape-p ,val2)
+           `(escape-string ,,val2)
+           ,val2))))
+
 (defmacro raw (&rest forms)
   `(let (*auto-escape*) ,@forms))
 
 (defmacro esc (&rest forms)
   `(let ((*auto-escape* t))
      ,@(loop for form in forms
-             collect `(escape-string ,form))))
+             collect (%escape-string form))))
 
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym)))
@@ -72,7 +83,7 @@
               append `(,(concatenate 'string
                                      (string-downcase key)
                                      "=\"")
-                       (escape-string ,val)
+                       ,(%escape-string val)
                        "\""
                        " ")))))
 
@@ -95,8 +106,9 @@
                                                     (if (listp ,res) (format nil "~{~A~}" ,res)
                                                         ,res))))
                                  ((null elem) "")
-                                 ((stringp elem) `(escape-string ,elem))
-                                 (t `(escape-string (format nil "~A" ,elem)))))
+                                 ((stringp elem) (%escape-string elem))
+                                 ((symbolp elem) `(escape-string (format nil "~A" ,elem)))
+                                 (t (%escape-string (format nil "~A" elem)))))
                 (list (format nil "</~(~A~)>" name)))
          (if (eq *markup-language* :html)
              (list ">")
