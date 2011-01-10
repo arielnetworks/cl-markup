@@ -137,7 +137,7 @@ Example B:
                                                #:G0)
                                               (write-string "</table>" #:G0)))
 
-The generated code looks more complicate than CL-WHO's one, because CL-MARKUP decide where to output the result in execute-time.
+The generated code looks more complicate than CL-WHO's one, because CL-MARKUP decide where to output the result in run-time.
 
 ## Markup language
 
@@ -156,7 +156,22 @@ You can change the markup language to set <code>\*markup-language\*</code> to th
     (eval-when (:compile-toplevel :load-toplevel :execute)
       (setf *markup-language* :html))
 
-Be sure to wrap <code>setf</code> with <code>eval-when</code>, because <code>markup</code> needs it to optimize it's expanded code heavily in compile-time.
+Don't forget to wrap <code>setf</code> with <code>eval-when</code>, because <code>markup</code> needs it to optimize it's expanded code heavily in compile-time.
+
+This also means, you **CAN'T** write the following code.
+
+    ;; THIS IS A WRONG EXAMPLE!!
+    (let ((*markup-language* :html))
+      (markup (:br)))
+    ;=> "<br />"
+
+If you **really** want to delay the decision until run-time, use <code>markup*</code>, a function version of <code>markup</code>.
+
+    ;; This is a correct one.
+    ;; But I don't recommend this for performance.
+    (let ((*markup-language* :xhtml))
+      (markup* '(:br)))
+    ;=> "<br>"
 
 Other macros <code>html</code>, <code>xhtml</code> and <code>xml</code>, outputs DOCTYPE before <code>markup</code>.
 
