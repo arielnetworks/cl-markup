@@ -47,12 +47,12 @@ Example A:
                           (write-string (escape-string (cl-markup::ensure-string title))
                                         *output-stream*)
                           (write-string "</b></a><br />" *output-stream*))
-                   (with-output-to-string (#:g0)
-                     (write-string "<a href=\"" #:g0)
-                     (write-string (escape-string (cl-markup::ensure-string link)) #:g0)
-                     (write-string "\"><b>" #:g0)
-                     (write-string (escape-string (cl-markup::ensure-string title)) #:g0)
-                     (write-string "</b></a><br />" #:g0)))))
+                   (with-output-to-string (#:G0)
+                     (write-string "<a href=\"" #:G0)
+                     (write-string (escape-string (cl-markup::ensure-string link)) #:G0)
+                     (write-string "\"><b>" #:G0)
+                     (write-string (escape-string (cl-markup::ensure-string title)) #:G0)
+                     (write-string "</b></a><br />" #:G0)))))
 
 Example B:
 
@@ -76,7 +76,7 @@ Example B:
     (if *output-stream*
         (progn (write-string "<table border=\"0\" cellpadding=\"4\">"
                              *output-stream*)
-               (write-string (let ((#:g6
+               (write-string (let ((#:G6
                                     (loop for i below 25 by 5
                                           collect (markup
                                                    (:tr
@@ -98,16 +98,16 @@ Example B:
                                                                 nil
                                                                 "~@R"
                                                                 (1+ j))))))))))
-                                    (if (listp #:g6)
-                                        (format nil "~{~A~}" #:g6)
-                                        #:g6))
+                                    (if (listp #:G6)
+                                        (format nil "~{~A~}" #:G6)
+                                        #:G6))
                                    *output-stream*)
                                (write-string "</table>" *output-stream*))
-                             (with-output-to-string (#:g0)
+                             (with-output-to-string (#:G0)
                                (write-string "<table border=\"0\" cellpadding=\"4\">"
-                                             #:g0)
+                                             #:G0)
                                (write-string (let
-                                              ((#:g6
+                                              ((#:G6
                                                 (loop for i below 25 by 5
                                                  collect (markup
                                                           (:tr
@@ -131,11 +131,13 @@ Example B:
                                                                        (1+
                                                                         j))))))))))
                                                 (if
-                                                 (listp #:g6)
-                                                 (format nil "~{~A~}" #:g6)
-                                                 #:g6))
-                                               #:g0)
-                                              (write-string "</table>" #:g0)))
+                                                 (listp #:G6)
+                                                 (format nil "~{~A~}" #:G6)
+                                                 #:G6))
+                                               #:G0)
+                                              (write-string "</table>" #:G0)))
+
+The generated code looks more complicate than CL-WHO's one, because CL-MARKUP decide where to output the result in execute-time.
 
 ## Markup language
 
@@ -143,6 +145,18 @@ Example B:
 
     (markup (:p "あいうえお"))
     ;=> "<p>あいうえお</p>"
+
+CL-MARKUP outputs tags in XHTML style by default.
+
+    (markup (:br))
+    ;=> "<br />"
+
+You can change the markup language to set <code>\*markup-language\*</code> to the other one.
+
+    (eval-when (:compile-toplevel :load-toplevel :execute)
+      (setf *markup-language* :html))
+
+Be sure to wrap <code>setf</code> with <code>eval-when</code>, because <code>markup</code> needs it to optimize it's expanded code heavily in compile-time.
 
 Other macros <code>html</code>, <code>xhtml</code> and <code>xml</code>, outputs DOCTYPE before <code>markup</code>.
 

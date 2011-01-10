@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 22)
+(plan 21)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -19,15 +19,13 @@
   )
 
 (deftest markup
+    (eval-when (:compile-toplevel :load-toplevel :execute)
+      (setq cl-markup::*markup-language* :xhtml))
     (setf cl-test-more:*default-test-function* #'string=)
   (is (markup (:p "hoge")) "<p>hoge</p>" "normal 'p' tag.")
   (is (markup (:ul (:li "one") (:li "two"))) "<ul><li>one</li><li>two</li></ul>" "multiple items")
   (is (markup (:br)) "<br />" "'br' tag")
   (is (markup (:br :style "clear: both;")) "<br style=\"clear: both;\" />" "'br' tag with an attribute")
-  (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>" "'br' tag")
-  (is (html (:ul (loop for item in '(1 2 3) collect (markup (:li (:br) item)))))
-      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li><br>1</li><li><br>2</li><li><br>3</li></ul></html>"
-      "inner markup sees *markup-language*")
   (is (markup (:p nil)) "<p></p>" "empty tag")
   (is (markup (:p :id "title" :class "important" "Hello, World!")) "<p id=\"title\" class=\"important\">Hello, World!</p>" "with attributes.")
   (is (markup (:p (:div :style "padding: 10px;" "fuga"))) "<p><div style=\"padding: 10px;\">fuga</div></p>" "nested tag.")
@@ -37,10 +35,15 @@
   (is (markup (:ul (loop for v in '("a" "b" "c") collect (markup (:li v)))))
       "<ul><li>a</li><li>b</li><li>c</li></ul>"
       "embed expressions")
-  (is (html (:body (:table (loop for x from 0 to 2 collect (markup (:tr (:td x)))))))
-      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><body><table><tr><td>0</td></tr><tr><td>1</td></tr><tr><td>2</td></tr></table></body></html>"
-      "embed expressions")
   )
+
+(deftest html
+    (eval-when (:compile-toplevel :load-toplevel :execute)
+      (setf *markup-language* :html))
+  (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>")
+  (is (html (:ul (loop for v in '("a" "b" "c") collect (markup* `(:li ,v (:br))))))
+      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li>a<br></li><li>b<br></li><li>c<br></li></ul></html>")
+)
 
 (deftest raw-and-esc
     (setf cl-markup::*auto-escape* t)
@@ -65,3 +68,6 @@
 )
 
 (run-test-all)
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (setf *markup-language* :xhtml))

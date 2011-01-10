@@ -145,33 +145,24 @@
   `(%write-strings
     ,@(tag->string tag)))
 
-(defun doctype ()
-  (%write-strings
-   (case *markup-language*
-     (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-     (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
-     (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
-     (t ""))))
-
-(defmacro with-markup-lang (lang &body body)
-  `(%write-strings
-    ,(eval-when (:compile-toplevel :load-toplevel :execute)
-       (if lang (setq *markup-language* lang))
-       "")
-    ,@(loop for b in body
-            append (eval b))))
+(defun doctype (lang)
+  (case lang
+    (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+    (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
+    (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
+    (t "")))
 
 (defmacro with-doctype (lang &body body)
-  `(prog1
-     (with-markup-lang ,lang
-       (list (doctype))
-       ,@body)
-     (setq *markup-language* :xhtml)))
+  `(%write-strings
+    ,(doctype lang)
+    ,@(let ((*markup-language* lang))
+        (loop for b in body
+              append (eval b)))))
 
 (defmacro markup (&rest tags)
-  `(with-markup-lang nil
-     (loop for tag in ',tags
-           append (tag->string tag))))
+  `(%write-strings
+    ,@(loop for tag in tags
+            append (tag->string tag))))
 
 (defun markup* (&rest tags)
   (eval `(markup ,@tags)))
