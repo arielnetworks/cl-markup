@@ -7,6 +7,7 @@
 * Support multiple document types (markup, xml, html, xhtml)
 * Output with doctype
 * Direct output to stream
+* Support i18n
 
 ## Usage
 
@@ -207,6 +208,8 @@ If you don't hope this behavior, set <code>\*auto-escape\*</code> nil or use <co
     ;=> "<p>Tiffany & Co.</p>"
 
 In a contrasting case, <code>esc</code> is available about it.
+
+## I18n
 
 ## Direct output to stream
 

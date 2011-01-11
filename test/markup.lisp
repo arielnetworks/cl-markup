@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 18)
+(plan 19)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -54,6 +54,13 @@
       "<p><hoge></p>"
       "*auto-escape* is nil")
 )
+
+(deftest i18n
+  (setf *locale* :ja-JP)
+  (let ((hash (make-hash-table :test 'equal)))
+    (setf (gethash "Schedule" hash) "予定")
+    (setf (gethash :ja-JP *i18n-dictionary*) hash))
+  (is (markup (:h3 (i18n "Schedule"))) "<h3>予定</h3>"))
 
 (run-test-all)
 

@@ -8,3 +8,6 @@
 
 (defvar *markup-language* :xhtml
   "Valid markup languages are :html, :xhtml and :xml")
+
+(defvar *locale* :en-US)
+(defvar *i18n-dictionary* (make-hash-table :test #'eq :size 10))

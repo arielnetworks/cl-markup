@@ -6,7 +6,10 @@
            :markup*
            :doctype
            :escape-string :raw :esc
+           :i18n
            :enable-markup-syntax
            :*auto-escape*
            :*output-stream*
-           :*markup-language*))
+           :*markup-language*
+           :*i18n-dictionary*
+           :*locale*))

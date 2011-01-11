@@ -7,3 +7,10 @@
   `(let ((*auto-escape* t))
      ,@(loop for form in forms
              collect (%escape-string-form form))))
+
+(defmacro i18n (val)
+  (let ((dict (gensym)))
+    `(let ((,dict (gethash *locale* *i18n-dictionary*)))
+       (if ,dict
+           (gethash ,val ,dict)
+           ,val))))
