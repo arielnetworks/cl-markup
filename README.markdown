@@ -98,8 +98,8 @@ Example B:
                                                                 nil
                                                                 "~@R"
                                                                 (1+ j))))))))))
-                                    (if (listp #:G6)
-                                        (format nil "~{~A~}" #:G6)
+                                    (if (consp #:G6)
+                                        (apply #'write-strings #:G6)
                                         #:G6))
                                    *output-stream*)
                                (write-string "</table>" *output-stream*))
