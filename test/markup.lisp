@@ -7,8 +7,6 @@
         "&lt;script type=&quot;text/javascript&quot;&gt;alert();&lt;/script&gt;"))
 
 (deftest markup
-    (eval-when (:compile-toplevel :load-toplevel :execute)
-      (setq cl-markup::*markup-language* :xhtml))
     (setf cl-test-more:*default-test-function* #'string=)
   (is (markup (:p "hoge")) "<p>hoge</p>" "normal 'p' tag.")
   (is (markup (:ul (:li "one") (:li "two"))) "<ul><li>one</li><li>two</li></ul>" "multiple items")
@@ -26,8 +24,6 @@
   )
 
 (deftest html
-    (eval-when (:compile-toplevel :load-toplevel :execute)
-      (setf *markup-language* :html))
   (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>")
   (is (html (:ul (loop for v in '("a" "b" "c") collect (markup* `(:li ,v (:br))))))
       "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li>a<br></li><li>b<br></li><li>c<br></li></ul></html>")
@@ -56,6 +52,3 @@
 )
 
 (run-test-all)
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (setf *markup-language* :xhtml))

@@ -84,11 +84,16 @@
     (t "")))
 
 (defmacro with-doctype (lang &body body)
-  `(%write-strings
-    ,(doctype lang)
-    ,@(let ((*markup-language* lang))
-        (loop for b in body
-              append (eval b)))))
+  `(prog2
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (setq *markup-language* ,lang))
+     (%write-strings
+      ,(doctype lang)
+      ,@(let ((*markup-language* lang))
+          (loop for b in body
+                append (eval b))))
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (setq *markup-language* :xhtml))))
 
 (defmacro markup (&rest tags)
   `(%write-strings
