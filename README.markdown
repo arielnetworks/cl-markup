@@ -99,7 +99,9 @@ Example B:
                                                                 "~@R"
                                                                 (1+ j))))))))))
                                     (if (consp #:G6)
-                                        (apply #'write-strings #:G6)
+                                        (with-output-to-string (#:G7)
+                                          (dolist (#:G8 #:G6)
+                                            (write-string #:G8 #:G7)))
                                         #:G6))
                                    *output-stream*)
                                (write-string "</table>" *output-stream*))

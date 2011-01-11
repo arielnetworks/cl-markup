@@ -69,10 +69,13 @@
 
 (defun %dirty-string-form (form)
   (cond
-    ((consp form) (let ((res (gensym)))
+    ((consp form) (let ((res (gensym))
+                        (s (gensym))
+                        (r (gensym)))
                     `(let ((,res ,form))
                        (if (consp ,res)
-                           (apply #'write-strings ,res)
+                           (with-output-to-string (,s)
+                             (dolist (,r ,res) (write-string ,r ,s)))
                            ,res))))
     ((null form) "")
     ((stringp form) (%escape-string-form form))
@@ -86,14 +89,6 @@
   `(let ((*auto-escape* t))
      ,@(loop for form in forms
              collect (%escape-string-form form))))
-
-(defun write-strings (&rest strings)
-  (if *output-stream*
-      (loop for str in strings
-            do (write-string str *output-stream*))
-      (with-output-to-string (s)
-        (loop for str in strings
-              do (write-string str s)))))
 
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym))
