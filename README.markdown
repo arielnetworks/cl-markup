@@ -76,7 +76,7 @@ Example B:
     (if *output-stream*
         (progn (write-string "<table border=\"0\" cellpadding=\"4\">"
                              *output-stream*)
-               (write-string (let ((#:G6
+               (write-string (let ((#:G0
                                     (loop for i below 25 by 5
                                           collect (markup
                                                    (:tr
@@ -96,20 +96,20 @@ Example B:
                                                                 "green")
                                                                (format
                                                                 nil
-                                                                "~@R"
+                                                                "~@r"
                                                                 (1+ j))))))))))
-                                    (if (consp #:G6)
-                                        (with-output-to-string (#:G7)
-                                          (dolist (#:G8 #:G6)
-                                            (write-string #:G8 #:G7)))
-                                        #:G6))
+                                    (if (consp #:G0)
+                                        (with-output-to-string (#:G1)
+                                          (dolist (#:G2 #:G0)
+                                            (write-string #:G2 #:G1)))
+                                        #:G0))
                                    *output-stream*)
                                (write-string "</table>" *output-stream*))
                              (with-output-to-string (#:G0)
                                (write-string "<table border=\"0\" cellpadding=\"4\">"
                                              #:G0)
                                (write-string (let
-                                              ((#:G6
+                                              ((#:G0
                                                 (loop for i below 25 by 5
                                                  collect (markup
                                                           (:tr
@@ -129,13 +129,17 @@ Example B:
                                                                        "green")
                                                                       (format
                                                                        nil
-                                                                       "~@R"
+                                                                       "~@r"
                                                                        (1+
                                                                         j))))))))))
                                                 (if
-                                                 (listp #:G6)
-                                                 (format nil "~{~A~}" #:G6)
-                                                 #:G6))
+                                                 (consp #:G0)
+                                                 (with-output-to-string
+                                                  (#:G1)
+                                                  (dolist
+                                                   (#:G2 #:G0)
+                                                   (write-string #:G2 #:G1)))
+                                                 #:G0))
                                                #:G0)
                                               (write-string "</table>" #:G0)))
 
