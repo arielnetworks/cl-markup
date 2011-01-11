@@ -14,4 +14,5 @@
                 :components ((:file "package")
                              (:file "special")
                              (:file "markup")
+                             (:file "helper")
                              (:file "readmacro")))))

@@ -82,14 +82,6 @@
     ((symbolp form) `(escape-string (ensure-string ,form)))
     (t (%escape-string-form (format nil "~A" form)))))
 
-(defmacro raw (&rest forms)
-  `(let (*auto-escape*) ,@forms))
-
-(defmacro esc (&rest forms)
-  `(let ((*auto-escape* t))
-     ,@(loop for form in forms
-             collect (%escape-string-form form))))
-
 (defmacro %write-strings (&rest strings)
   (let ((s (gensym))
         (strings (map-group-if #'stringp strings

@@ -3,10 +3,10 @@
 ## About
 
 * Fast (even faster if you compile it)
+* Safety
 * Support multiple document types (markup, xml, html, xhtml)
 * Output with doctype
 * Direct output to stream
-* Escape embedded strings automatically
 
 ## Usage
 
