@@ -144,10 +144,6 @@
              (list ">")
              (list " />"))))))
 
-(defmacro render-tag (tag)
-  `(%write-strings
-    ,@(tag->string tag)))
-
 (defun doctype (lang)
   (case lang
     (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")

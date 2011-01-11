@@ -1,22 +1,10 @@
 (in-package :cl-markup-test)
 
-(plan 21)
+(plan 18)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
         "&lt;script type=&quot;text/javascript&quot;&gt;alert();&lt;/script&gt;"))
-
-(deftest html-expansion
-    (setf cl-test-more:*default-test-function* #'equal)
-  (is-expand (cl-markup::render-tag (:p :id "title" (:div "<hoge>")))
-             (cl-markup::%write-strings "<p" " " "id=\"" "title" "\"" ">" "<div" ">" (escape-string "<hoge>") "</div>" "</p>"))
-  (is-expand (cl-markup::render-tag (:p nil))
-             (cl-markup::%write-strings "<p" ">" "" "</p>")
-             "expands nil to empty string")
-  (is-expand (cl-markup::render-tag (:p nil "hoge"))
-             (cl-markup::%write-strings "<p" ">" "" "hoge" "</p>")
-             "expands strings as a string")
-  )
 
 (deftest markup
     (eval-when (:compile-toplevel :load-toplevel :execute)
