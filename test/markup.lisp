@@ -21,7 +21,9 @@
   (is (markup (:ul (loop for v in '("a" "b" "c") collect (markup (:li v)))))
       "<ul><li>a</li><li>b</li><li>c</li></ul>"
       "embed expressions")
-  )
+  (is (markup (:ul nil))
+      "<ul></ul>"
+      "nil body"))
 
 (deftest html
   (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>")
