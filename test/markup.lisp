@@ -55,6 +55,9 @@
   (is (let (*auto-escape*) (markup (:p "<hoge>")))
       "<p><hoge></p>"
       "*auto-escape* is nil")
+  (is (markup (:p (raw (let (x) x))))
+      "<p></p>"
+      "raw with nil")
 )
 
 (run-test-all)
