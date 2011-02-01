@@ -21,6 +21,9 @@
   (is (markup (:ul (loop for v in '("a" "b" "c") collect (markup (:li v)))))
       "<ul><li>a</li><li>b</li><li>c</li></ul>"
       "embed expressions")
+  (is (markup (:ul nil))
+      "<ul></ul>"
+      "nil body")
   (is (markup (:div (let ((s "<a>Foo</a>")) s))) "<div>&lt;a&gt;Foo&lt;/a&gt;</div>"
       "auto escape")
   )

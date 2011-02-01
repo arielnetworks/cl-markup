@@ -13,7 +13,7 @@
                         (s (gensym))
                         (r (gensym)))
                     `(let ((,res ,form))
-                       (if (consp ,res)
+                       (if (listp ,res)
                            (with-output-to-string (,s)
                              (dolist (,r ,res) (write-string ,r ,s)))
                            (escape-string ,res)))))
