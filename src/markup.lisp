@@ -16,7 +16,7 @@
                        (if (consp ,res)
                            (with-output-to-string (,s)
                              (dolist (,r ,res) (write-string ,r ,s)))
-                           ,res))))
+                           (escape-string ,res)))))
     ((null form) "")
     ((stringp form) (%escape-string-form form))
     ((symbolp form) `(escape-string (ensure-string ,form)))
