@@ -35,7 +35,6 @@
 )
 
 (deftest raw-and-esc
-    (setf cl-markup::*auto-escape* t)
   (is (markup (:p "<hoge>"))
       "<p>&lt;hoge&gt;</p>"
       "normal case")
@@ -52,9 +51,6 @@
   (is (markup (:p "<hoge>" (:div (raw (concatenate 'string "Tiffany" " & " "Co.")))))
       "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
       "raw with an expression")
-  (is (let (*auto-escape*) (markup (:p "<hoge>")))
-      "<p><hoge></p>"
-      "*auto-escape* is nil")
   (is (markup (:p (raw (let (x) x))))
       "<p></p>"
       "raw with nil")

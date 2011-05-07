@@ -18,7 +18,7 @@
       (if cur-res (list (apply fn res)) res))))
 
 (defun substitute-string-by (fn string)
-  (declare (optimize speed))
+  (declare (optimize (speed 3)))
   (let ((first-pos (position-if fn string)))
     (if first-pos
         (with-output-to-string (s)
@@ -37,18 +37,16 @@
         string)))
 
 (defun escape-string (string)
-  (if *auto-escape*
-      (substitute-string-by
-       (lambda (char)
-         (case char
-           (#\& "&amp;")
-           (#\< "&lt;")
-           (#\> "&gt;")
-           (#\' "&#039;")
-           (#\" "&quot;")
-           (t (string char))))
-       string)
-      string))
+  (substitute-string-by
+   (lambda (char)
+     (case char
+       (#\& "&amp;")
+       (#\< "&lt;")
+       (#\> "&gt;")
+       (#\' "&#039;")
+       (#\" "&quot;")
+       (t (string char))))
+   string))
 
 (defun ensure-string (val)
   (if (stringp val)
