@@ -69,11 +69,12 @@
          (nconc (list ">")
                 (loop for elem in body
                       if (tagp elem)
-                       append (tag->string elem)
-                     else
-                       collect (%dirty-string-form elem))
+                        append (tag->string elem)
+                      else
+                        collect (%dirty-string-form elem))
                 (list (format nil "</~(~A~)>" name)))
-         (if (eq *markup-language* :html)
+         (if (or (eq *markup-language* :html)
+                 (eq *markup-language* :html5))
              (list ">")
              (list " />"))))))
 
@@ -81,6 +82,7 @@
   (case lang
     (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
+    (:html5 "<!DOCTYPE html>")
     (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
     (t "")))
 
@@ -103,6 +105,10 @@
 
 (defun markup* (&rest tags)
   (eval `(markup ,@tags)))
+
+(defmacro html5 (&rest tags)
+  `(with-doctype :html5
+     (tag->string (cons :html ',tags))))
 
 (defmacro html (&rest tags)
   `(with-doctype :html
