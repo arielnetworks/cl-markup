@@ -4,7 +4,7 @@
 
 * Fast (even faster if you compile it)
 * Safety
-* Support multiple document types (markup, xml, html, xhtml)
+* Support multiple document types (markup, xml, html, html5, xhtml)
 * Output with doctype
 * Direct output to stream
 
@@ -184,6 +184,9 @@ Other macros <code>html</code>, <code>xhtml</code> and <code>xml</code>, outputs
     (html (:p "あいうえお") (:br))
     ;=> "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><p>あいうえお</p><br></html>"
 
+    (html5 (:p "あいうえお") (:br))
+    ;=> "<!DOCTYPE html><html><p>あいうえお</p><br></html>"
+
     (xhtml (:p "あいうえお") (:br))
     ;=> "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html><p>あいうえお</p><br /></html>"
 
@@ -237,4 +240,9 @@ But, <code>markup</code> is too long to embed. CL-MARKUP provides an usefull syn
 ## License
 
 Copyright (c) 2011 Eitarow Fukamachi.  
+ 
+Contributors:
+
+m7d - HTML5 support, April 21, 2012.
+
 Licensed under the LLGPL License.
