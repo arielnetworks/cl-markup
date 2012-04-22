@@ -179,7 +179,7 @@ If you **really** want to delay the decision until run-time, use <code>markup*</
       (markup* '(:br)))
     ;=> "<br>"
 
-Other macros <code>html</code>, <code>xhtml</code> and <code>xml</code>, outputs DOCTYPE before <code>markup</code>.
+Other macros <code>html</code>, <code>xhtml</code>, <code>html5</code>, and <code>xml</code> output DOCTYPE before <code>markup</code>.
 
     (html (:p "あいうえお") (:br))
     ;=> "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><p>あいうえお</p><br></html>"
