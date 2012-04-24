@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 18)
+(plan 20)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -31,8 +31,12 @@
 (deftest html
   (is (html (:br)) "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><br></html>")
   (is (html (:ul (loop for v in '("a" "b" "c") collect (markup* `(:li ,v (:br))))))
-      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li>a<br></li><li>b<br></li><li>c<br></li></ul></html>")
-)
+      "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><ul><li>a<br></li><li>b<br></li><li>c<br></li></ul></html>"))
+
+(deftest html5
+  (is (html5 (:br)) "<!DOCTYPE html><html><br></html>")
+  (is (html5 (:ul (loop for v in '("a" "b" "c") collect (markup* `(:li ,v (:br))))))
+      "<!DOCTYPE html><html><ul><li>a<br></li><li>b<br></li><li>c<br></li></ul></html>"))
 
 (deftest raw-and-esc
   (is (markup (:p "<hoge>"))
