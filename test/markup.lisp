@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 20)
+(plan 22)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -43,12 +43,12 @@
       "<p>&lt;hoge&gt;</p>"
       "normal case")
   ;; FIXME: double escaping.
-;  (is (markup (:p (esc "<hoge>")))
-;      "<p>&lt;hoge&gt;</p>"
-;      "esc")
-;  (is (markup (:p (esc (concatenate 'string "<" "hage" ">"))))
-;      "<p>&lt;hage&gt;</p>"
-;      "esc with an expression")
+  (is (markup (:p (esc "<hoge>")))
+      "<p>&lt;hoge&gt;</p>"
+      "esc")
+  (is (markup (:p (esc (concatenate 'string "<" "hage" ">"))))
+      "<p>&lt;hage&gt;</p>"
+      "esc with an expression")
   (is (markup (:p "<hoge>" (:div (raw "Tiffany & Co."))))
       "<p>&lt;hoge&gt;<div>Tiffany & Co.</div></p>"
       "raw")
