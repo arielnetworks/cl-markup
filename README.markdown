@@ -25,8 +25,14 @@ Generally CL-MARKUP generates efficient codes which mainly consists of
 series of `write-string's as much as possible. See how following two
 examples are expanded by macro expansion.
 
+<<<<<<< HEAD
 As you can see, the codes are a bit more complicated than that of
 CL-WHO because CL-MARKUP alters the destination of output in run-time.
+=======
+As you can see, the codes are bit more complicated than what CL-WHO
+generates because CL-MARKUP alters the destination of output in
+run-time.
+>>>>>>> 7588d7dde9a6b3a23c671f4511bb73bbdf7b4e14
 
 Example A:
 
