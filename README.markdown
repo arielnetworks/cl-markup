@@ -25,6 +25,9 @@ Generally CL-MARKUP generates efficient codes which mainly consists of
 series of `write-string's as much as possible. See how following two
 examples are expanded by macro expansion.
 
+As you can see, the codes are a bit more complicated than that of
+CL-WHO because CL-MARKUP alters the destination of output in run-time.
+
 Example A:
 
     ;; Example A
@@ -145,32 +148,27 @@ Example B:
                                                #:G0)
                                               (write-string "</table>" #:G0)))
 
-As you can see, the codes are more complicated than what CL-WHO
-generates, because CL-MARKUP alters the destination of output in
-run-time.
-
 ## Markup language
 
-<code>markup</code> is the most simple way to generate HTML.
+<code>markup</code> is the simplest way to generate HTML.
 
     (markup (:p "あいうえお"))
     ;=> "<p>あいうえお</p>"
 
-By default, CL-MARKUP-generated tags follow XHTML valid style.
+By default, CL-MARKUP follows XHTML valid styling.
 
     (markup (:br))
     ;=> "<br />"
 
-You can configure the markup language by setting <code>\*markup-language\*</code>.
+You can configure the style by setting <code>\*markup-language\*</code>.
 
     (eval-when (:compile-toplevel :load-toplevel :execute)
       (setf *markup-language* :html))
 
 Don't forget to wrap <code>setf</code> with <code>eval-when</code>
 since it is used in compile-time in order to expand
-<code>markup</code>. 
-
-This also means, you are **NOT** allowed to write the code like this:
+<code>markup</code>. This also means you are **NOT** allowed to write
+codes like this:
 
     ;; THIS IS A WRONG EXAMPLE!!
     (let ((*markup-language* :html))
@@ -254,7 +252,7 @@ which can be enabled by <code>(enable-markup-syntax)</code>.
 
 ## License
 
-Copyright (c) 2011 Eitarow Fukamachi.  
+Copyright (c) 2011 Eitarow Fukamachi. 
  
 Contributors:
 
