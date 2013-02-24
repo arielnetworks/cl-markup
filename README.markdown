@@ -1,10 +1,10 @@
 # CL-MARKUP - Modern markup generation library for Common Lisp
 
-## About
+## Features & advantages
 
-* Fast (even faster if you compile it)
+* Fast (even faster through compiling the code)
 * Safety
-* Support multiple document types (markup, xml, html, html5, xhtml)
+* Support for multiple document types (markup, xml, html, html5, xhtml)
 * Output with doctype
 * Direct output to stream
 
@@ -19,9 +19,14 @@
 
 ## Installation
 
-## Really fast this?
+## Is this really fast?
 
-Macros, provided by CL-MARKUP, generates really efficient code. They convert into just a calling `write-string' as possible. See following two examples and how CL-MARKUP expands them.
+Generally CL-MARKUP generates efficient codes which mainly consists of
+series of `write-string's as much as possible. See how following two
+examples are expanded by macro expansion.
+
+As you can see, the codes are a bit more complicated than that of
+CL-WHO because CL-MARKUP alters the destination of output in run-time.
 
 Example A:
 
@@ -143,35 +148,35 @@ Example B:
                                                #:G0)
                                               (write-string "</table>" #:G0)))
 
-The generated code looks more complicate than CL-WHO's one, because CL-MARKUP decide where to output the result in run-time.
-
 ## Markup language
 
-<code>markup</code> is the most simple way to generate HTML.
+<code>markup</code> is the simplest way to generate HTML.
 
     (markup (:p "あいうえお"))
     ;=> "<p>あいうえお</p>"
 
-CL-MARKUP outputs tags in XHTML style by default.
+By default, CL-MARKUP follows XHTML valid styling.
 
     (markup (:br))
     ;=> "<br />"
 
-You can change the markup language to set <code>\*markup-language\*</code> to the other one.
+You can configure the style by setting <code>\*markup-language\*</code>.
 
     (eval-when (:compile-toplevel :load-toplevel :execute)
       (setf *markup-language* :html))
 
-Don't forget to wrap <code>setf</code> with <code>eval-when</code>, because <code>markup</code> needs it to optimize it's expanded code heavily in compile-time.
-
-This also means, you **CAN'T** write the following code.
+Don't forget to wrap <code>setf</code> with <code>eval-when</code>
+since it is used in compile-time in order to expand
+<code>markup</code>. This also means you are **NOT** allowed to write
+codes like this:
 
     ;; THIS IS A WRONG EXAMPLE!!
     (let ((*markup-language* :html))
       (markup (:br)))
     ;=> "<br />"
 
-If you **really** want to delay the decision until run-time, use <code>markup*</code>, a function version of <code>markup</code>.
+In case you **really** want to delay the decision until run-time, use
+<code>markup*</code>, a functional version of <code>markup</code>.
 
     ;; This is a correct one.
     ;; But I don't recommend this for performance.
@@ -179,7 +184,9 @@ If you **really** want to delay the decision until run-time, use <code>markup*</
       (markup* '(:br)))
     ;=> "<br>"
 
-Other macros <code>html</code>, <code>xhtml</code>, <code>html5</code>, and <code>xml</code> output DOCTYPE before <code>markup</code>.
+Other macros such as <code>html</code>, <code>xhtml</code>,
+<code>html5</code>, and <code>xml</code> output DOCTYPE before
+<code>markup</code>.
 
     (html (:p "あいうえお") (:br))
     ;=> "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><p>あいうえお</p><br></html>"
@@ -195,12 +202,13 @@ Other macros <code>html</code>, <code>xhtml</code>, <code>html5</code>, and <cod
 
 ## Escape
 
-Embedded strings will be escaped automatically.
+Embedded strings are escaped automatically.
 
     (markup (:p "Tiffany & Co."))
     ;=> "<p>Tiffany &amp; Co.</p>"
 
-If you don't hope this behavior, set <code>\*auto-escape\*</code> nil or use <code>raw</code> in order to suppress it temporally.
+If you don't want this behavior, set <code>\*auto-escape\*</code> nil
+or use <code>raw</code> for temporal suppression.
 
     (let ((*auto-escape* nil))
       (markup (:p "Tiffany & Co.")))
@@ -209,11 +217,15 @@ If you don't hope this behavior, set <code>\*auto-escape\*</code> nil or use <co
     (markup (:p (raw "Tiffany & Co.")))
     ;=> "<p>Tiffany & Co.</p>"
 
-In a contrasting case, <code>esc</code> is available about it.
+Also, when you want to ensure a certain code to be escaped (maybe
+inside <code>raw</code>) use <code>esc</code>, which has the similar
+syntax as that of <code>raw</code>.
 
 ## Direct output to stream
 
-Markup macros returns html as a string. You can customize this behavior using <code>\*output-stream\*</code>.
+<code>Markup</code> macros returns html as a string. This behavior can
+be customized by modifying <code>\*output-stream\*</code> which is
+defaulted to <code>\*standard-output\*</code>.
 
     ;; Default behavior
     (let (*output-stream*)
@@ -228,18 +240,19 @@ Markup macros returns html as a string. You can customize this behavior using <c
 
 ## Markup syntax
 
-You can embeded Lisp code in a tag body.
+You can embed Lisp code in the body of each tag.
 
     (markup (:ul (loop for item in '(1 2 3) collect (markup (:li item)))))
 
-But, <code>markup</code> is too long to embed. CL-MARKUP provides an usefull syntax to write more shortly. To enable it, put <code>(enable-markup-syntax)</code> before.
+For more readability, CL-MARKUP provides a reader macro <code>#M</code>
+which can be enabled by <code>(enable-markup-syntax)</code>.
 
     (enable-markup-syntax)
     #M(:ul (loop for item in '(1 2 3) collect #M(:li item))))
 
 ## License
 
-Copyright (c) 2011 Eitarow Fukamachi.  
+Copyright (c) 2011 Eitarow Fukamachi. 
  
 Contributors:
 
