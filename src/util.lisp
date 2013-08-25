@@ -1,5 +1,7 @@
 (in-package :cl-markup)
 
+(defvar *auto-escape* t)
+
 (defun map-group-if (pred list fn)
   (loop
     while list
@@ -37,16 +39,18 @@
         string)))
 
 (defun escape-string (string)
-  (substitute-string-by
-   (lambda (char)
-     (case char
-       (#\& "&amp;")
-       (#\< "&lt;")
-       (#\> "&gt;")
-       (#\' "&#039;")
-       (#\" "&quot;")
-       (t (string char))))
-   string))
+  (if *auto-escape*
+      (substitute-string-by
+       (lambda (char)
+	 (case char
+	   (#\& "&amp;")
+	   (#\< "&lt;")
+	   (#\> "&gt;")
+	   (#\' "&#039;")
+	   (#\" "&quot;")
+	   (t (string char))))
+       string)
+      string))
 
 (defun ensure-string (val)
   (if (stringp val)

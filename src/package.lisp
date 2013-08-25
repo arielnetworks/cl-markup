@@ -9,4 +9,5 @@
            :escape-string :raw :esc
            :enable-markup-syntax
            :*output-stream*
+	   :*auto-escape*
            :*markup-language*))
