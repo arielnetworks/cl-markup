@@ -1,6 +1,6 @@
 (in-package :cl-markup-test)
 
-(plan 22)
+(plan 5)
 
 (deftest escape
     (is (escape-string "<script type=\"text/javascript\">alert();</script>")
@@ -26,6 +26,14 @@
       "nil body")
   (is (markup (:div (let ((s "<a>Foo</a>")) s))) "<div>&lt;a&gt;Foo&lt;/a&gt;</div>"
       "auto escape")
+  (let ((*auto-escape* t))
+    (is (markup (:p "Tiffany & Co."))
+        "<p>Tiffany &amp; Co.</p>"
+        "*auto-escape* is T"))
+  (let ((*auto-escape* nil))
+    (is (markup (:p "Tiffany & Co."))
+        "<p>Tiffany & Co.</p>"
+        "*auto-escape* is NIL"))
   )
 
 (deftest html
