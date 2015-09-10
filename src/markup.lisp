@@ -83,13 +83,19 @@
     (:xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
     (:html "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">")
     (:html5 "<!DOCTYPE html>")
+    (:xhtml5 "<!DOCTYPE html>")
     (:xhtml "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
     (t "")))
+
+(defun lang-for-doctype (lang)
+  (case lang
+    (:xhtml5 :xml)
+    (t lang)))
 
 (defmacro with-doctype (lang &body body)
   `(prog2
      (eval-when (:compile-toplevel :load-toplevel :execute)
-       (setq *markup-language* ,lang))
+       (setq *markup-language* ,(lang-for-doctype lang)))
      (%write-strings
       ,(doctype lang)
       ,@(let ((*markup-language* lang))
@@ -105,6 +111,10 @@
 
 (defun markup* (&rest tags)
   (eval `(markup ,@tags)))
+
+(defmacro xhtml5 (&rest tags)
+  `(with-doctype :xhtml5
+     (tag->string (append '(:html :xmlns "http://www.w3.org/1999/xhtml") ',tags))))
 
 (defmacro html5 (&rest tags)
   `(with-doctype :html5
