@@ -49,16 +49,17 @@
 
 (defun attributes->string (attr-plist)
   (and (consp attr-plist)
-       (loop for (key val) on attr-plist by #'cddr
-             append (if (equal val t)
-                        (list (format nil "~A " (string-downcase key)))
-                        (progn
-                          `(,(concatenate 'string
-                                          (string-downcase key)
-                                          "=\"")
-                            ,(%dirty-string-form val)
-                            "\""
-                            " "))))))
+       (butlast
+        (loop for (key val) on attr-plist by #'cddr
+              append (if (equal val t)
+                         (list (string-downcase key) " ")
+                         (progn
+                           `(,(concatenate 'string
+                                           (string-downcase key)
+                                           "=\"")
+                             ,(%dirty-string-form val)
+                             "\""
+                             " ")))))))
 
 (defun tag->string (tag)
   (multiple-value-bind (name attr-plist body)
