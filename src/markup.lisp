@@ -51,12 +51,15 @@
   (and (consp attr-plist)
        (butlast
         (loop for (key val) on attr-plist by #'cddr
-              append `(,(concatenate 'string
-                                     (string-downcase key)
-                                     "=\"")
-                       ,(%dirty-string-form val)
-                       "\""
-                       " ")))))
+              append (if (equal val t)
+                         (list (string-downcase key) " ")
+                         (progn
+                           `(,(concatenate 'string
+                                           (string-downcase key)
+                                           "=\"")
+                             ,(%dirty-string-form val)
+                             "\""
+                             " ")))))))
 
 (defun tag->string (tag)
   (multiple-value-bind (name attr-plist body)
